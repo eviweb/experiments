@@ -24,81 +24,68 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  * 
- * @package     evidev\experiments\php\apidesign\visitor\internal
+ * @package     evidev\experiments\php\tests\apidesign\visitor\fixtures
  * @author      Eric VILLARD <dev@eviweb.fr>
  * @copyright	(c) 2013 Eric VILLARD <dev@eviweb.fr>
  * @license     http://opensource.org/licenses/MIT MIT License
  */
 
-namespace evidev\experiments\php\apidesign\visitor\internal;
+namespace evidev\experiments\php\tests\apidesign\visitor\fixtures;
 
 use \evidev\experiments\php\apidesign\Visitor;
-use \evidev\experiments\php\apidesign\visitor\Version10;
-use \evidev\experiments\php\apidesign\expression\Number;
-use \evidev\experiments\php\apidesign\expression\Plus;
-use \evidev\experiments\php\apidesign\expression\Minus;
 use \evidev\experiments\php\apidesign\expression\Real;
 
 /**
- * visitor API 1.0
+ * Real expression implementation
  * 
- * @package     evidev\experiments\php\apidesign\visitor\internal
+ * @package     evidev\experiments\php\tests\apidesign\visitor\fixtures
  * @author      Eric VILLARD <dev@eviweb.fr>
  * @copyright	(c) 2013 Eric VILLARD <dev@eviweb.fr>
  * @license     http://opensource.org/licenses/MIT MIT License
- * @version     1.0
  */
-final class VisitorVersion10 extends Visitor
+final class RealImpl implements Real
 {
     /**
-     * visitor implementation
-     *
-     * @var \evidev\experiments\php\apidesign\visitor\Version10
+     * real value
+     * 
+     * @var double
      */
-    protected $impl;
-
+    private $value;
+    
     /**
      * constructor
-     *
-     * @param \evidev\experiments\php\apidesign\visitor\Version10 $provider  visitor implementation provider
+     * 
+     * @param double $value    real value
      */
-    protected function __construct(Version10 $provider)
+    private function __construct($value)
     {
-        $this->impl = $provider;
+        $this->value = (double) $value;
+    }
+    
+    /**
+     * factory method
+     * 
+     * @param double $value    real value
+     * @return RealImpl
+     */
+    public static function create($value)
+    {
+        return new static($value);
     }
 
     /**
      * @inheritdoc
      */
-    protected function overrideableDispatchNumber(Number $number)
+    public function getValue()
     {
-        $this->impl->visitNumber($number, $this);
+        return $this->value;
     }
 
     /**
      * @inheritdoc
      */
-    protected function overrideableDispatchPlus(Plus $sum)
+    public function visit(Visitor $visitor)
     {
-        $this->impl->visitPlus($sum, $this);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function overrideableDispatchMinus(Minus $minus)
-    {
-        if ($this->impl->visitUnknown($minus, $this)) {
-            $minus->getFirst()->visit($this);
-            $minus->getSecond()->visit($this);
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function overrideableDispatchReal(Real $real)
-    {
-        $this->impl->visitUnknown($real, $this);
+        $visitor->dispatchReal($this);
     }
 }

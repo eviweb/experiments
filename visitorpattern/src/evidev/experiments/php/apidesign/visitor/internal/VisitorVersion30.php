@@ -33,36 +33,37 @@
 namespace evidev\experiments\php\apidesign\visitor\internal;
 
 use \evidev\experiments\php\apidesign\Visitor;
-use \evidev\experiments\php\apidesign\visitor\Version10;
+use \evidev\experiments\php\apidesign\visitor\Version30;
 use \evidev\experiments\php\apidesign\expression\Number;
 use \evidev\experiments\php\apidesign\expression\Plus;
 use \evidev\experiments\php\apidesign\expression\Minus;
 use \evidev\experiments\php\apidesign\expression\Real;
+use \evidev\experiments\php\apidesign\expression\internal\RealWrapper;
 
 /**
- * visitor API 1.0
+ * visitor API 3.0
  * 
  * @package     evidev\experiments\php\apidesign\visitor\internal
  * @author      Eric VILLARD <dev@eviweb.fr>
  * @copyright	(c) 2013 Eric VILLARD <dev@eviweb.fr>
  * @license     http://opensource.org/licenses/MIT MIT License
- * @version     1.0
+ * @version     3.0
  */
-final class VisitorVersion10 extends Visitor
+final class VisitorVersion30 extends Visitor
 {
     /**
      * visitor implementation
      *
-     * @var \evidev\experiments\php\apidesign\visitor\Version10
+     * @var \evidev\experiments\php\apidesign\visitor\Version30
      */
     protected $impl;
 
     /**
      * constructor
      *
-     * @param \evidev\experiments\php\apidesign\visitor\Version10 $provider  visitor implementation provider
+     * @param \evidev\experiments\php\apidesign\visitor\Version30 $provider  visitor implementation provider
      */
-    protected function __construct(Version10 $provider)
+    protected function __construct(Version30 $provider)
     {
         $this->impl = $provider;
     }
@@ -72,7 +73,7 @@ final class VisitorVersion10 extends Visitor
      */
     protected function overrideableDispatchNumber(Number $number)
     {
-        $this->impl->visitNumber($number, $this);
+        $this->impl->visitReal(RealWrapper::create($number), $this);
     }
 
     /**
@@ -88,10 +89,7 @@ final class VisitorVersion10 extends Visitor
      */
     protected function overrideableDispatchMinus(Minus $minus)
     {
-        if ($this->impl->visitUnknown($minus, $this)) {
-            $minus->getFirst()->visit($this);
-            $minus->getSecond()->visit($this);
-        }
+        $this->impl->visitMinus($minus, $this);
     }
 
     /**
@@ -99,6 +97,6 @@ final class VisitorVersion10 extends Visitor
      */
     protected function overrideableDispatchReal(Real $real)
     {
-        $this->impl->visitUnknown($real, $this);
+        $this->impl->visitReal($real, $this);
     }
 }

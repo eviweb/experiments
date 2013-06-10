@@ -24,81 +24,67 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  * 
- * @package     evidev\experiments\php\apidesign\visitor\internal
+ * @package     evidev\experiments\php\tests\apidesign\visitor\fixtures
  * @author      Eric VILLARD <dev@eviweb.fr>
  * @copyright	(c) 2013 Eric VILLARD <dev@eviweb.fr>
  * @license     http://opensource.org/licenses/MIT MIT License
  */
 
-namespace evidev\experiments\php\apidesign\visitor\internal;
+namespace evidev\experiments\php\tests\apidesign\visitor\fixtures;
 
 use \evidev\experiments\php\apidesign\Visitor;
-use \evidev\experiments\php\apidesign\visitor\Version10;
+use \evidev\experiments\php\apidesign\visitor\Version30;
+use \evidev\experiments\php\apidesign\Expression;
 use \evidev\experiments\php\apidesign\expression\Number;
 use \evidev\experiments\php\apidesign\expression\Plus;
 use \evidev\experiments\php\apidesign\expression\Minus;
 use \evidev\experiments\php\apidesign\expression\Real;
+use \evidev\experiments\php\tests\apidesign\visitor\fixtures\AbstractPrinter;
 
 /**
- * visitor API 1.0
+ * visitor implementation for printing
  * 
- * @package     evidev\experiments\php\apidesign\visitor\internal
+ * @package     evidev\experiments\php\tests\apidesign\visitor\fixtures
  * @author      Eric VILLARD <dev@eviweb.fr>
  * @copyright	(c) 2013 Eric VILLARD <dev@eviweb.fr>
  * @license     http://opensource.org/licenses/MIT MIT License
- * @version     1.0
  */
-final class VisitorVersion10 extends Visitor
+final class PrintVisitorVersion30 extends AbstractPrinter implements Version30
 {
     /**
-     * visitor implementation
-     *
-     * @var \evidev\experiments\php\apidesign\visitor\Version10
+     * @inheritdoc
      */
-    protected $impl;
-
-    /**
-     * constructor
-     *
-     * @param \evidev\experiments\php\apidesign\visitor\Version10 $provider  visitor implementation provider
-     */
-    protected function __construct(Version10 $provider)
+    public function visitPlus(Plus $sum, Visitor $self)
     {
-        $this->impl = $provider;
+        $sum->getFirst()->visit($self);
+        $this->append(" + ");
+        $sum->getSecond()->visit($self);
     }
 
     /**
      * @inheritdoc
      */
-    protected function overrideableDispatchNumber(Number $number)
+    public function visitUnknown(Expression $expression, Visitor $self)
     {
-        $this->impl->visitNumber($number, $this);
+        $this->append('unknown');
+        return true;
     }
 
     /**
      * @inheritdoc
      */
-    protected function overrideableDispatchPlus(Plus $sum)
+    public function visitMinus(Minus $minus, Visitor $self)
     {
-        $this->impl->visitPlus($sum, $this);
+        $minus->getFirst()->visit($self);
+        $this->append(" - ");
+        $minus->getSecond()->visit($self);
     }
 
     /**
      * @inheritdoc
      */
-    protected function overrideableDispatchMinus(Minus $minus)
+    public function visitReal(Real $real, Visitor $self)
     {
-        if ($this->impl->visitUnknown($minus, $this)) {
-            $minus->getFirst()->visit($this);
-            $minus->getSecond()->visit($this);
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function overrideableDispatchReal(Real $real)
-    {
-        $this->impl->visitUnknown($real, $this);
+        $this->append(number_format($real->getValue(), 1));
     }
 }

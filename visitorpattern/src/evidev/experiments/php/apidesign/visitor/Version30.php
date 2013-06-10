@@ -24,81 +24,62 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  * 
- * @package     evidev\experiments\php\apidesign\visitor\internal
+ * @package     evidev\experiments\php\apidesign\visitor
  * @author      Eric VILLARD <dev@eviweb.fr>
  * @copyright	(c) 2013 Eric VILLARD <dev@eviweb.fr>
  * @license     http://opensource.org/licenses/MIT MIT License
  */
 
-namespace evidev\experiments\php\apidesign\visitor\internal;
+namespace evidev\experiments\php\apidesign\visitor;
 
 use \evidev\experiments\php\apidesign\Visitor;
-use \evidev\experiments\php\apidesign\visitor\Version10;
-use \evidev\experiments\php\apidesign\expression\Number;
+use \evidev\experiments\php\apidesign\Expression;
+use \evidev\experiments\php\apidesign\expression\Real;
 use \evidev\experiments\php\apidesign\expression\Plus;
 use \evidev\experiments\php\apidesign\expression\Minus;
-use \evidev\experiments\php\apidesign\expression\Real;
 
 /**
- * visitor API 1.0
+ * nonmonotonic visitor interface 3.0
  * 
- * @package     evidev\experiments\php\apidesign\visitor\internal
+ * @package     evidev\experiments\php\apidesign\visitor
  * @author      Eric VILLARD <dev@eviweb.fr>
  * @copyright	(c) 2013 Eric VILLARD <dev@eviweb.fr>
  * @license     http://opensource.org/licenses/MIT MIT License
- * @version     1.0
+ * @version     3.0
  */
-final class VisitorVersion10 extends Visitor
+interface Version30
 {
     /**
-     * visitor implementation
+     * handle visit on unknown expression
      *
-     * @var \evidev\experiments\php\apidesign\visitor\Version10
+     * @param \evidev\experiments\php\apidesign\Expression $expression  expression to process on
+     * @param \evidev\experiments\php\apidesign\Visitor $self   current visitor
+     * @return boolean  returns true if visited elements can be processed,
+     *                  or false if not
      */
-    protected $impl;
+    public function visitUnknown(Expression $expression, Visitor $self);
 
     /**
-     * constructor
+     * visit Plus expression
      *
-     * @param \evidev\experiments\php\apidesign\visitor\Version10 $provider  visitor implementation provider
+     * @param \evidev\experiments\php\apidesign\expression\Plus $sum    expression to process on
+     * @param \evidev\experiments\php\apidesign\Visitor $self   current visitor
      */
-    protected function __construct(Version10 $provider)
-    {
-        $this->impl = $provider;
-    }
+    public function visitPlus(Plus $sum, Visitor $self);
 
     /**
-     * @inheritdoc
+     * visit Minus expression
+     * 
+     * @param \evidev\experiments\php\apidesign\expression\Minus $minus expression to process on
+     * @param \evidev\experiments\php\apidesign\Visitor $self   current visitor
      */
-    protected function overrideableDispatchNumber(Number $number)
-    {
-        $this->impl->visitNumber($number, $this);
-    }
+    public function visitMinus(Minus $minus, Visitor $self);
 
     /**
-     * @inheritdoc
+     * visit Real expression
+     *
+     * @param \evidev\experiments\php\apidesign\expression\Real $real   expression to process on
+     * @param \evidev\experiments\php\apidesign\Visitor $self   current visitor
      */
-    protected function overrideableDispatchPlus(Plus $sum)
-    {
-        $this->impl->visitPlus($sum, $this);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function overrideableDispatchMinus(Minus $minus)
-    {
-        if ($this->impl->visitUnknown($minus, $this)) {
-            $minus->getFirst()->visit($this);
-            $minus->getSecond()->visit($this);
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function overrideableDispatchReal(Real $real)
-    {
-        $this->impl->visitUnknown($real, $this);
-    }
+    public function visitReal(Real $real, Visitor $self);
 }

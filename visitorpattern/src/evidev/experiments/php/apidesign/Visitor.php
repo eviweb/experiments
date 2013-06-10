@@ -35,11 +35,14 @@ namespace evidev\experiments\php\apidesign;
 use \evidev\experiments\php\apidesign\visitor\VisitorBasis;
 use \evidev\experiments\php\apidesign\visitor\Version10;
 use \evidev\experiments\php\apidesign\visitor\Version20;
+use \evidev\experiments\php\apidesign\visitor\Version30;
 use \evidev\experiments\php\apidesign\visitor\internal\VisitorVersion10;
 use \evidev\experiments\php\apidesign\visitor\internal\VisitorVersion20;
+use \evidev\experiments\php\apidesign\visitor\internal\VisitorVersion30;
 use \evidev\experiments\php\apidesign\expression\Number;
 use \evidev\experiments\php\apidesign\expression\Plus;
 use \evidev\experiments\php\apidesign\expression\Minus;
+use \evidev\experiments\php\apidesign\expression\Real;
 
 /**
  * visitor abstract class
@@ -74,10 +77,10 @@ abstract class Visitor
      * create a visitor instance depending on the implemented client interface 
      * and delegate visit processing to the implementation provider
      * 
-     * @param \evidev\experiments\php\apidesign\visitor\VisitorBasis $provider  visitor implementation provider
-     * @return \evidev\experiments\php\apidesign\Visitor    returns the Visitor instance
+     * @param object $provider  visitor implementation provider
+     * @return \evidev\experiments\php\apidesign\Visitor    returns the Visitor instance or null
      */
-    final public static function create(VisitorBasis $provider)
+    final public static function create($provider)
     {
         $interfaces = class_implements($provider, false);
         unset($interfaces['evidev\experiments\php\apidesign\visitor\VisitorBasis']);
@@ -86,6 +89,7 @@ abstract class Visitor
         if (is_callable('static::'.$method)) {
             return static::$method($provider);
         }
+        return null;
     }
     
     /**
@@ -100,8 +104,6 @@ abstract class Visitor
         return new VisitorVersion10($provider);
     }
 
-
-
     /**
      * factory method
      *
@@ -112,6 +114,18 @@ abstract class Visitor
     final protected static function createVersion20(Version20 $provider)
     {
         return new VisitorVersion20($provider);
+    }
+
+    /**
+     * factory method
+     *
+     * @param \evidev\experiments\php\apidesign\visitor\Version30 $provider v3.0 implementation provider
+     * @return \evidev\experiments\php\apidesign\visitor\internal\VisitorVersion30  returns the Visitor instance
+     * @since 3.0
+     */
+    final protected static function createVersion30(Version30 $provider)
+    {
+        return new VisitorVersion30($provider);
     }
     
     /**
@@ -172,8 +186,29 @@ abstract class Visitor
      * dispatchMinus implementation
      *
      * @usedby dispatchMinus
-     * @param \evidev\experiments\php\apidesign\expression\Minus $sum
+     * @param \evidev\experiments\php\apidesign\expression\Minus $minus
      * @since 2.0
      */
     abstract protected function overrideableDispatchMinus(Minus $minus);
+
+    /**
+     * dispatch visit processing of a Real expression
+     *
+     * @uses overrideableDispatchReal
+     * @param \evidev\experiments\php\apidesign\expression\Real $real
+     * @since 3.0
+     */
+    final public function dispatchReal(Real $real)
+    {
+        $this->overrideableDispatchReal($real);
+    }
+
+    /**
+     * dispatchReal implementation
+     *
+     * @usedby dispatchReal
+     * @param \evidev\experiments\php\apidesign\expression\Real $real
+     * @since 3.0
+     */
+    abstract protected function overrideableDispatchReal(Real $real);
 }

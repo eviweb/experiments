@@ -37,6 +37,7 @@ use \evidev\experiments\php\apidesign\visitor\Version20;
 use \evidev\experiments\php\apidesign\expression\Number;
 use \evidev\experiments\php\apidesign\expression\Plus;
 use \evidev\experiments\php\apidesign\expression\Minus;
+use \evidev\experiments\php\apidesign\expression\Real;
 
 /**
  * visitor API 2.0
@@ -88,5 +89,13 @@ final class VisitorVersion20 extends Visitor
     protected function overrideableDispatchMinus(Minus $minus)
     {
         $this->impl->visitMinus($minus, $this);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function overrideableDispatchReal(Real $real)
+    {
+        $this->impl->visitUnknown($real, $this);
     }
 }

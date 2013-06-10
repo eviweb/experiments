@@ -24,81 +24,69 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  * 
- * @package     evidev\experiments\php\apidesign\visitor\internal
+ * @package     evidev\experiments\php\apidesign\expression\internal
  * @author      Eric VILLARD <dev@eviweb.fr>
  * @copyright	(c) 2013 Eric VILLARD <dev@eviweb.fr>
  * @license     http://opensource.org/licenses/MIT MIT License
  */
 
-namespace evidev\experiments\php\apidesign\visitor\internal;
+namespace evidev\experiments\php\apidesign\expression\internal;
 
 use \evidev\experiments\php\apidesign\Visitor;
-use \evidev\experiments\php\apidesign\visitor\Version10;
 use \evidev\experiments\php\apidesign\expression\Number;
-use \evidev\experiments\php\apidesign\expression\Plus;
-use \evidev\experiments\php\apidesign\expression\Minus;
 use \evidev\experiments\php\apidesign\expression\Real;
 
 /**
- * visitor API 1.0
+ * Real wrapper
  * 
- * @package     evidev\experiments\php\apidesign\visitor\internal
+ * @package     evidev\experiments\php\apidesign\expression\internal
  * @author      Eric VILLARD <dev@eviweb.fr>
  * @copyright	(c) 2013 Eric VILLARD <dev@eviweb.fr>
  * @license     http://opensource.org/licenses/MIT MIT License
- * @version     1.0
  */
-final class VisitorVersion10 extends Visitor
+final class RealWrapper implements Real
 {
     /**
-     * visitor implementation
-     *
-     * @var \evidev\experiments\php\apidesign\visitor\Version10
+     * wrapped Number
+     * 
+     * @var Number
      */
-    protected $impl;
+    private $number;
 
     /**
      * constructor
      *
-     * @param \evidev\experiments\php\apidesign\visitor\Version10 $provider  visitor implementation provider
+     * @param Number $number    wrapped Number instance
      */
-    protected function __construct(Version10 $provider)
+    private function __construct(Number $number)
     {
-        $this->impl = $provider;
+        $this->number = $number;
+    }
+
+    /**
+     * factory method
+     *
+     * @param Number $number    wrapped Number instance
+     * @return RealWrapper
+     */
+    public static function create(Number $number)
+    {
+        return new static($number);
     }
 
     /**
      * @inheritdoc
      */
-    protected function overrideableDispatchNumber(Number $number)
+    public function getValue()
     {
-        $this->impl->visitNumber($number, $this);
+        return (double) $this->number->getValue();
     }
 
     /**
      * @inheritdoc
      */
-    protected function overrideableDispatchPlus(Plus $sum)
+    public function visit(Visitor $visitor)
     {
-        $this->impl->visitPlus($sum, $this);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function overrideableDispatchMinus(Minus $minus)
-    {
-        if ($this->impl->visitUnknown($minus, $this)) {
-            $minus->getFirst()->visit($this);
-            $minus->getSecond()->visit($this);
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function overrideableDispatchReal(Real $real)
-    {
-        $this->impl->visitUnknown($real, $this);
+        $this->number->visit($visitor);
     }
 }
