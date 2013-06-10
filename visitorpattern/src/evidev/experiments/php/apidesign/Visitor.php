@@ -34,7 +34,9 @@ namespace evidev\experiments\php\apidesign;
 
 use \evidev\experiments\php\apidesign\visitor\VisitorBasis;
 use \evidev\experiments\php\apidesign\visitor\Version10;
+use \evidev\experiments\php\apidesign\visitor\Version20;
 use \evidev\experiments\php\apidesign\visitor\internal\VisitorVersion10;
+use \evidev\experiments\php\apidesign\visitor\internal\VisitorVersion20;
 use \evidev\experiments\php\apidesign\expression\Number;
 use \evidev\experiments\php\apidesign\expression\Plus;
 use \evidev\experiments\php\apidesign\expression\Minus;
@@ -96,6 +98,20 @@ abstract class Visitor
     final protected static function createVersion10(Version10 $provider)
     {
         return new VisitorVersion10($provider);
+    }
+
+
+
+    /**
+     * factory method
+     *
+     * @param \evidev\experiments\php\apidesign\visitor\Version20 $provider v2.0 implementation provider
+     * @return \evidev\experiments\php\apidesign\visitor\internal\VisitorVersion20  returns the Visitor instance
+     * @since 2.0
+     */
+    final protected static function createVersion20(Version20 $provider)
+    {
+        return new VisitorVersion20($provider);
     }
     
     /**
