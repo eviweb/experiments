@@ -32,47 +32,58 @@
 
 namespace evidev\experiments\php\tests\apidesign\visitor\fixtures;
 
-use \evidev\experiments\php\apidesign\Visitor;
-use \evidev\experiments\php\apidesign\visitor\Version10;
-use \evidev\experiments\php\apidesign\Expression;
-use \evidev\experiments\php\apidesign\expression\Number;
-use \evidev\experiments\php\apidesign\expression\Plus;
-use \evidev\experiments\php\tests\apidesign\visitor\fixtures\AbstractPrinter;
-
 /**
- * visitor implementation for printing
+ * abstract printer helper class
  * 
  * @package     evidev\experiments\php\tests\apidesign\visitor\fixtures
  * @author      Eric VILLARD <dev@eviweb.fr>
  * @copyright	(c) 2013 Eric VILLARD <dev@eviweb.fr>
  * @license     http://opensource.org/licenses/MIT MIT License
  */
-final class PrintVisitorVersion10 extends AbstractPrinter implements Version10
+abstract class AbstractPrinter
 {
     /**
-     * @inheritdoc
+     * buffer value
+     * 
+     * @var string 
      */
-    public function visitNumber(Number $number, Visitor $self)
-    {
-        $this->append($number->getValue());
-    }
-
+    private $value;
+    
     /**
-     * @inheritdoc
+     * constructor
      */
-    public function visitPlus(Plus $sum, Visitor $self)
+    private function __construct()
     {
-        $sum->getFirst()->visit($self);
-        $this->append(" + ");
-        $sum->getSecond()->visit($self);
+        $this->value = '';
     }
-
+    
     /**
-     * @inheritdoc
+     * factory method
+     *
+     * @return PrintVisitorVersion10
      */
-    public function visitUnknown(Expression $expression, Visitor $self)
+    final public static function create()
     {
-        $this->append('unknown');
-        return true;
+        return new static();
+    }
+    
+    /**
+     * get current $value
+     * 
+     * @return string
+     */
+    final public function toString()
+    {
+        return $this->value;
+    }
+    
+    /**
+     * append $string to current $value
+     * 
+     * @param string $string
+     */
+    final protected function append($string)
+    {
+        $this->value.=$string;
     }
 }
