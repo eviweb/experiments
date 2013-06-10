@@ -96,7 +96,7 @@ final class PrintVisitorVersion10 implements Version10
      */
     public function visitUnknown(Expression $expression, Visitor $self)
     {
-        $this->append('unkown');
+        $this->append('unknown');
         return true;
     }
     
