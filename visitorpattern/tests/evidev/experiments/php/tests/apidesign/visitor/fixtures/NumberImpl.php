@@ -59,7 +59,7 @@ final class NumberImpl implements Number
      */
     private function __construct($value)
     {
-        $this->value = $value;
+        $this->value = (integer) $value;
     }
     
     /**
