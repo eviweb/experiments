@@ -37,6 +37,7 @@ use \evidev\experiments\php\apidesign\visitor\Version10;
 use \evidev\experiments\php\apidesign\visitor\internal\VisitorVersion10;
 use \evidev\experiments\php\apidesign\expression\Number;
 use \evidev\experiments\php\apidesign\expression\Plus;
+use \evidev\experiments\php\apidesign\expression\Minus;
 
 /**
  * visitor abstract class
@@ -51,7 +52,7 @@ abstract class Visitor
     /**
      * visitor implementation
      * 
-     * @var Version10 
+     * @var VisitorBasis
      */
     protected $impl;
     
@@ -138,4 +139,25 @@ abstract class Visitor
      * @since 1.0
      */
     abstract protected function overrideableDispatchPlus(Plus $sum);
+
+    /**
+     * dispatch visit processing of a Minus expression
+     *
+     * @uses overrideableDispatchMinus
+     * @param \evidev\experiments\php\apidesign\expression\Minus $minus
+     * @since 2.0
+     */
+    final public function dispatchMinus(Minus $minus)
+    {
+        $this->overrideableDispatchMinus($minus);
+    }
+
+    /**
+     * dispatchMinus implementation
+     *
+     * @usedby dispatchMinus
+     * @param \evidev\experiments\php\apidesign\expression\Minus $sum
+     * @since 2.0
+     */
+    abstract protected function overrideableDispatchMinus(Minus $minus);
 }

@@ -33,8 +33,10 @@
 namespace evidev\experiments\php\apidesign\visitor\internal;
 
 use \evidev\experiments\php\apidesign\Visitor;
+use \evidev\experiments\php\apidesign\visitor\Version10;
 use \evidev\experiments\php\apidesign\expression\Number;
 use \evidev\experiments\php\apidesign\expression\Plus;
+use \evidev\experiments\php\apidesign\expression\Minus;
 
 /**
  * visitor API 1.0
@@ -47,6 +49,23 @@ use \evidev\experiments\php\apidesign\expression\Plus;
  */
 final class VisitorVersion10 extends Visitor
 {
+    /**
+     * visitor implementation
+     *
+     * @var \evidev\experiments\php\apidesign\visitor\Version10
+     */
+    protected $impl;
+
+    /**
+     * constructor
+     *
+     * @param \evidev\experiments\php\apidesign\visitor\Version10 $provider  visitor implementation provider
+     */
+    protected function __construct(Version10 $provider)
+    {
+        $this->impl = $provider;
+    }
+
     /**
      * @inheritdoc
      */
@@ -61,5 +80,16 @@ final class VisitorVersion10 extends Visitor
     protected function overrideableDispatchPlus(Plus $sum)
     {
         $this->impl->visitPlus($sum, $this);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function overrideableDispatchMinus(Minus $minus)
+    {
+        if ($this->impl->visitUnknown($minus, $this)) {
+            $minus->getFirst()->visit($this);
+            $minus->getSecond()->visit($this);
+        }
     }
 }
